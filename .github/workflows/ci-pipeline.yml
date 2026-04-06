@@ -9,7 +9,7 @@ on:
         type: boolean
       Codeql-analysis:
         required: false
-        default: true
+        default: false
         type: boolean
       sonarqube:
         required: false
@@ -17,7 +17,7 @@ on:
         type: boolean
       build:
         required: false
-        default: false
+        default: true
         type: boolean
     secrets:
       SONAR_TOKEN:
