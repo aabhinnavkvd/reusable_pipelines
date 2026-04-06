@@ -2,6 +2,23 @@ name: CI Pipeline
 
 on:
   workflow_call: 
+    inputs:
+      code-checkout-and-setup:
+        required: false
+        default: true
+        type: boolean
+      Codeql-analysis:
+        required: false
+        default: true
+        type: boolean
+      sonarqube:
+        required: false
+        default: false
+        type: boolean
+      build:
+        required: false
+        default: false
+        type: boolean
     secrets:
       SONAR_TOKEN:
         required: true
@@ -12,6 +29,7 @@ on:
 
 jobs:
   code-checkout-and-setup:
+    if: ${{ inputs.code-checkout-and-setup }}
     runs-on: ubuntu-latest
     steps:
       - name: Code Checkout
@@ -35,6 +53,7 @@ jobs:
           path: test-results/
   
   Codeql-analysis:
+    if: ${{ inputs.Codeql-analysis }}
     runs-on: ubuntu-latest
     needs: code-checkout-and-setup
     permissions:
@@ -61,6 +80,7 @@ jobs:
           category: 'Security'
 
   sonarqube:
+    if: ${{ inputs.sonarqube }}
     runs-on: ubuntu-latest
     needs: code-checkout-and-setup
     steps:
@@ -84,10 +104,10 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
+    if: ${{ success() && inputs.build }}
     name: Build and Push Docker Image
     runs-on: ubuntu-latest
-    needs: [Codeql-analysis, sonarqube]
-    if: success()
+    needs: [code-checkout-and-setup, Codeql-analysis, sonarqube]
     outputs:
       image_tags: ${{ steps.vars.outputs.IMAGE_TAGS }}
     steps:
