@@ -2,6 +2,13 @@ name: CI Pipeline
 
 on:
   workflow_call: 
+    secrets:
+      SONAR_TOKEN:
+        required: true
+      DOCKER_USERNAME:
+        required: true
+      DOCKER_PASSWORD:
+        required: true
 
 jobs:
   code-checkout-and-setup:
